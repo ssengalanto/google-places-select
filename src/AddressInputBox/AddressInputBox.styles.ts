@@ -5,4 +5,8 @@ export const useStyles = makeStyles((theme) => ({
     minWidth: '500px',
     padding: theme.spacing(2),
   },
+  input: {
+    width: '100%',
+    marginTop: 10,
+  },
 }));

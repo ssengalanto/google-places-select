@@ -3,40 +3,54 @@ import Script from 'react-load-script';
 import Grid from '@material-ui/core/Grid';
 import TextField from '@material-ui/core/TextField';
 
+import { addressInputBoxFields, AddressState } from './AddressInputBox.config';
+
 import { useStyles } from './AddressInputBox.styles';
 
-const autocomplete: { current: null | google.maps.places.Autocomplete } = {
-  current: null,
-};
+let autocomplete: google.maps.places.Autocomplete;
 
 export const AddressInputBox: React.FC = () => {
-  const [address, setAddress] = useState('');
+  const [query, setQuery] = useState('');
+  const [addressState, setAddressState] = useState<AddressState>({
+    addressLine1: '',
+    addressLine2: '',
+    city: '',
+    state: '',
+    zipCode: '',
+  });
+
   const classes = useStyles();
 
-  const handleAddressChange: React.ChangeEventHandler<HTMLInputElement> = (e) => {
-    setAddress(e.target.value);
+  const handleQueryChange: React.ChangeEventHandler<HTMLInputElement> = ({ target: { value } }) => {
+    setQuery(value);
+  };
+
+  const handleAddressChange: React.ChangeEventHandler<HTMLInputElement> = ({
+    target: { name, value },
+  }) => {
+    setAddressState({
+      ...addressState,
+      [name]: value,
+    });
   };
 
   const handleScriptLoad = (): void => {
-    const options = {};
+    autocomplete = new google.maps.places.Autocomplete(
+      document.getElementById('autocomplete') as HTMLInputElement,
+      { type: 'geocode' },
+    );
 
-    const element = document.getElementById('autocomplete') as HTMLInputElement;
-    autocomplete.current = new google.maps.places.Autocomplete(element, options);
+    autocomplete.setFields(['address_components', 'formatted_address']);
 
-    autocomplete.current.setFields(['address_components', 'formatted_address']);
-
-    autocomplete.current.addListener('place_changed', handlePlaceSelect);
+    autocomplete.addListener('place_changed', handlePlaceSelect);
   };
 
   const handlePlaceSelect = (): void => {
-    if (!autocomplete.current) return;
-    const response = autocomplete.current.getPlace();
+    const response = autocomplete.getPlace();
 
     const address = response.address_components;
 
-    if (address) {
-      setAddress(response.formatted_address || '');
-    }
+    if (address) setQuery(response.formatted_address || '');
   };
 
   return (
@@ -51,11 +65,23 @@ export const AddressInputBox: React.FC = () => {
           variant="outlined"
           id="autocomplete"
           label="Location"
-          placeholder=""
-          InputLabelProps={{ shrink: !!address }}
-          onChange={handleAddressChange}
-          value={address}
+          InputLabelProps={{ shrink: !!query }}
+          onChange={handleQueryChange}
+          value={query}
         />
+        {addressInputBoxFields.map(({ name, label, required }) => (
+          <Grid item xs={12} key={name}>
+            <TextField
+              classes={{ root: classes.input }}
+              required={required}
+              name={name}
+              label={label}
+              InputLabelProps={{ shrink: !!addressState[name] }}
+              value={addressState[name]}
+              onChange={handleAddressChange}
+            />
+          </Grid>
+        ))}
       </Grid>
     </>
   );
