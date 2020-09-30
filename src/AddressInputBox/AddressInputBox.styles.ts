@@ -2,7 +2,8 @@ import { makeStyles } from '@material-ui/core/styles';
 
 export const useStyles = makeStyles((theme) => ({
   gridRoot: {
-    minWidth: '500px',
+    maxWidth: '500px',
+    width: '100%',
     padding: theme.spacing(2),
   },
   input: {

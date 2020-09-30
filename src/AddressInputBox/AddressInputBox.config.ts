@@ -4,11 +4,12 @@ export interface AddressState {
   city: string;
   state: string;
   zipCode: string;
+  disable: boolean;
 }
 
 interface AddressInputBoxConfigOptions {
   required?: boolean;
-  name: keyof AddressState;
+  name: Exclude<keyof AddressState, 'disable'>;
   label?: string;
 }
 
