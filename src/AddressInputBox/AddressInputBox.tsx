@@ -34,7 +34,7 @@ export const AddressInputBox: React.FC = () => {
         {addressInputBoxFields.map(({ name, label, required }) => (
           <Grid item xs={12} key={name}>
             <TextField
-              disabled
+              disabled={addressState.disable}
               classes={{ root: classes.input }}
               required={required}
               name={name}

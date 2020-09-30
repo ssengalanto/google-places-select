@@ -23,6 +23,7 @@ export const useAddressInputBox = () => {
     city: '',
     state: '',
     zipCode: '',
+    disable: true,
   });
 
   const handleQueryChange: React.ChangeEventHandler<HTMLInputElement> = useCallback(
@@ -70,6 +71,7 @@ export const useAddressInputBox = () => {
       city: fields.locality || '',
       state: fields.administrative_area_level_1 || '',
       zipCode: fields.postal_code || '',
+      disable: false,
     });
   }, [addressState]);
 
